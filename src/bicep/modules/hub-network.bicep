@@ -255,11 +255,19 @@ resource firewallLogging 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
     workspaceId: monitoringLawId
     logs: [
       {
-        category: 'AzureFirewallApplicationRule'
+        category: 'AZFWApplicationRule'
         enabled: true
       }
       {
-        category: 'AzureFirewallNetworkRule'
+        category: 'AZFWNetworkRule'
+        enabled: true
+      }
+      {
+        category: 'AZFWNatRule'
+        enabled: true
+      }
+      {
+        category: 'AZFWThreatIntel'
         enabled: true
       }
     ]
@@ -272,3 +280,4 @@ output firewallSubnetId string = vNet.properties.subnets[0].id
 output fwMgtSubnetId string = vNet.properties.subnets[2].id
 output publicIpAddressIds array = [publicIpAddress[0].id, publicIpAddress[1].id]
 output firewallPolicyId string = firewallPolicy.id
+output firewallPrivateIpAddress string = firewall.properties.ipConfigurations[0].properties.privateIPAddress
