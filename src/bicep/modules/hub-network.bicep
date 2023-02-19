@@ -85,6 +85,9 @@ resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01'= {
   tags: tags
   location: location
   properties: {
+    sku: {
+      tier: 'Basic'
+    }
     threatIntelMode: 'Alert'
   }
   dependsOn: [
