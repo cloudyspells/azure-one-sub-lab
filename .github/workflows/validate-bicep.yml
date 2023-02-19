@@ -22,5 +22,6 @@ jobs:
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         scope: subscription
+        region: westeurope
         template: src/bicep/main.bicep
         additionalArguments: "--what-if"
