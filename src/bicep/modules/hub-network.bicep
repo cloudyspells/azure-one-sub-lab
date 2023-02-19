@@ -1,4 +1,6 @@
-@description('/24 CIDR Prefix for the Hub vNet')
+targetScope = 'resourceGroup'
+
+@description('/24 CIDR Prefix for the Hub vNet. E.g.: 10.0.1.0')
 param hubVnetPrefix string = '10.0.1.0'
 @description('Name convention parts for resources')
 param NameConventionParts string
@@ -7,11 +9,14 @@ param location string = resourceGroup().location
 @description('Tags for resources')
 param tags object
 
-var subnetParts = split(hubVnetPrefix, '.')
+// Create an array of the vnet prefix octets
+var octets = split(hubVnetPrefix, '.')
 
-var firewallSubnetPrefix = '${ subnetParts[0] }.${ subnetParts[1] }.${ subnetParts[2]}.0/26'
-var servicesSubnetPrefix = '${ subnetParts[0] }.${ subnetParts[1] }.${ subnetParts[2]}.64/26'
+// Create /26 subnet prefixes from the vnet prefix octets
+var firewallSubnetPrefix = '${ octets[0] }.${ octets[1] }.${ octets[2]}.0/26'
+var servicesSubnetPrefix = '${ octets[0] }.${ octets[1] }.${ octets[2]}.64/26'
 
+// Ensure the hub vnet with a firewall- and a services-subnet exists
 resource vNet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: 'vnet-${ NameConventionParts }-hub'
   location: location
@@ -39,6 +44,7 @@ resource vNet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   }
 }
 
+// Firewall IP group for the services subnet in the hub network
 resource servicesIpGroup 'Microsoft.Network/ipGroups@2022-07-01' = {
   name: 'ipgrp-${NameConventionParts}-hub-services'
   tags: tags
@@ -50,6 +56,7 @@ resource servicesIpGroup 'Microsoft.Network/ipGroups@2022-07-01' = {
   }
 }
 
+// 2 Public IP addresses for the firewall
 resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-07-01' = [for i in range (0, 2): {
   name: 'pip-${NameConventionParts}-${ i + 1}'
   tags: tags
@@ -63,6 +70,7 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-07-01' = [for
   }
 }]
 
+// Firewall Policy to hold the rule collections
 resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01'= {
   name: 'fwp-${ NameConventionParts }'
   tags: tags
@@ -72,6 +80,7 @@ resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01'= {
   }
 }
 
+// Network rule collection group attached to the firewall policy
 resource networkRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2022-01-01' = {
   parent: firewallPolicy
   name: 'DefaultNetworkRuleCollectionGroup'
@@ -108,6 +117,7 @@ resource networkRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleColl
   }
 }
 
+// Application rule collection group attached to the firewall policy
 resource applicationRuleCollectionGroup 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2022-01-01' = {
   parent: firewallPolicy
   name: 'DefaultApplicationRuleCollectionGroup'
@@ -179,6 +189,7 @@ resource applicationRuleCollectionGroup 'Microsoft.Network/firewallPolicies/rule
   }
 }
 
+// The Azure Firewall deployment
 resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
   name: 'fw-${ NameConventionParts }'
   tags: tags
@@ -217,3 +228,8 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
     }
   }
 }
+
+output hubVnetId string = vNet.id
+output firewallSubnetId string = vNet.properties.subnets[0].id
+output publicIpAddressIds array = [publicIpAddress[0].id, publicIpAddress[1].id]
+output firewallPolicyId string = firewallPolicy.id

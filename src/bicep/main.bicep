@@ -15,8 +15,8 @@ param tags object = {
 
 // Lookup table for short location names for name convention
 var shortLocations = {
-  'westeurope': 'weu'
-  'northeurope': 'neu'
+  westeurope: 'weu'
+  northeurope: 'neu'
 }
 
 // Name convention parts for infra
@@ -26,13 +26,33 @@ var infraName = '${ shortLocations[location] }-infra-${ labName }'
 var rgNetworkName = 'rg-${ infraName }-network'
 var rgMonitoringName = 'rg-${ infraName }-monitoring'
 
+resource rgMonitoring 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+  name: rgMonitoringName
+  location: location
+}
+
+module monitoring 'modules/monitoring.bicep' = {
+  scope: rgMonitoring
+  name: 'deploy-monitoring-${ labName }'
+  params: {
+    NameConventionParts: infraName
+    tags: tags
+    location: location
+  }
+}
+
 resource rgNetwork 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: rgNetworkName
   location: location
 }
 
-
-resource rgMonitoring 'Microsoft.Resources/resourceGroups@2022-09-01' = {
-  name: rgMonitoringName
-  location: location
+module hubNetwork 'modules/hub-network.bicep' = {
+  scope: rgNetwork
+  name: 'deploy-hubnetwork-${ labName }'
+  params: {
+    NameConventionParts: infraName
+    hubVnetPrefix: hubVnetPrefix
+    location: location
+    tags: tags
+  }
 }
