@@ -13,19 +13,26 @@ param location string = resourceGroup().location
 @description('Tags for the resources')
 param tags object
 
+// Hub Vnet Name and resourcegroup
+var hubVnetName = split(hubVnetId, '/')[-1]
+var hubVnetRg = split(hubVnetId, '/')[-5]
+
+// Get names for the subnets from the vNetName
 var subnetNames = {
   frontend: '${ replace(vNetName, 'vnet-','snet-') }-frontend'
   backend: '${ replace(vNetName, 'vnet-','snet-') }-backend'
   paas: '${ replace(vNetName, 'vnet-','snet-') }-paas'
 }
+// Get names for the NSGs from the vNetName
 var nsgNames = {
   frontend: '${ replace(vNetName, 'vnet-','nsg-') }-frontend'
   backend: '${ replace(vNetName, 'vnet-','nsg-') }-backend'
   paas: '${ replace(vNetName, 'vnet-','nsg-') }-paas'
 }
 
-
+// Create the IP octets from the supplied prefix
 var octets = split(vNetAddressPrefix, '.')
+
 // Create /26 subnet prefixes from the vnet prefix octets
 var subnetPrefixes = {
   frontend: '${ octets[0] }.${ octets[1] }.${ octets[2]}.0/26'
@@ -39,7 +46,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2022-07-01' = [for item in
   tags: tags
 }]
 
-resource hubVnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
+resource newVnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: vNetName
   location: location
   tags: tags
@@ -53,5 +60,19 @@ resource hubVnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
         addressPrefix: subnetPrefixes[subnet.key]
       }
     }]
+  }
+}
+
+resource peerVnetToHub 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2022-07-01' = {
+  name: '${ vNetName }-to-hub'
+  parent: newVnet
+  properties: {
+    allowVirtualNetworkAccess: true
+    allowGatewayTransit: false
+    useRemoteGateways: true
+    allowForwardedTraffic: true
+    remoteVirtualNetwork: {
+      id: hubVnetId
+    }
   }
 }
