@@ -236,6 +236,10 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
       id: firewallPolicy.id
     }
   }
+  dependsOn: [
+    applicationRuleCollectionGroup
+    networkRuleCollectionGroup
+  ]
 }
 
 resource firewallLogging 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
