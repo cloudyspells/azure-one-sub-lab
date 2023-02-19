@@ -46,7 +46,7 @@ resource vNet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
       {
         name: 'AzureFirewallManagementSubnet'
         properties: {
-          addressPrefix: 
+          addressPrefix: fwMgtSubnetPrefix
         }
       }
     ]
