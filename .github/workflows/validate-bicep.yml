@@ -21,5 +21,6 @@ jobs:
     - uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        scope: subscription
         template: src/bicep/main.bicep
         additionalArguments: "--what-if"
