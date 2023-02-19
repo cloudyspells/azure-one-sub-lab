@@ -52,6 +52,7 @@ module hubNetwork 'modules/hub-network.bicep' = {
   params: {
     NameConventionParts: infraName
     hubVnetPrefix: hubVnetPrefix
+    monitoringLawId: monitoring.outputs.logAnalyticsId
     location: location
     tags: tags
   }

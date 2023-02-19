@@ -8,6 +8,8 @@ param NameConventionParts string
 param location string = resourceGroup().location
 @description('Tags for resources')
 param tags object
+@description('Central log analytics workspace ID for monitoring')
+param monitoringLawId string
 
 // Create an array of the vnet prefix octets
 var octets = split(hubVnetPrefix, '.')
@@ -228,6 +230,25 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
     }
   }
 }
+
+resource firewallLogging 'Microsoft.Insights/diagnosticSettings@2021-05-01-preview' = {
+  scope: firewall
+  name: '${ firewall.name }_Diag'
+  properties: {
+    workspaceId: monitoringLawId
+    logs: [
+      {
+        category: 'AzureFirewallApplicationRule'
+        enabled: true
+      }
+      {
+        category: 'AzureFirewallNetworkRule'
+        enabled: true
+      }
+    ]
+  }
+}
+
 
 output hubVnetId string = vNet.id
 output firewallSubnetId string = vNet.properties.subnets[0].id
