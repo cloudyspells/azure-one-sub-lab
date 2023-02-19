@@ -225,6 +225,17 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
         }
       }
     ]
+    managementIpConfiguration: {
+      name: 'MgtIpConfig-${ publicIpAddress[0].name }'
+      properties: {
+        subnet: {
+          id: vNet.properties.subnets[0].id
+        }
+        publicIPAddress: {
+          id: publicIpAddress[0].id
+        }
+      }
+    }
     firewallPolicy: {
       id: firewallPolicy.id
     }
