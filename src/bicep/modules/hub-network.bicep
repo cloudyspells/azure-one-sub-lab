@@ -216,9 +216,6 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
       {
         name: 'IpConfig-${ publicIpAddress[1].name }'
         properties: {
-          subnet: {
-            id: vNet.properties.subnets[0].id
-          }
           publicIPAddress: {
             id: publicIpAddress[1].id
           }
@@ -229,10 +226,10 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
       name: 'MgtIpConfig-${ publicIpAddress[0].name }'
       properties: {
         subnet: {
-          id: vNet.properties.subnets[0].id
+          id: vNet.properties.subnets[1].id
         }
         publicIPAddress: {
-          id: publicIpAddress[0].id
+          id: publicIpAddress[1].id
         }
       }
     }
