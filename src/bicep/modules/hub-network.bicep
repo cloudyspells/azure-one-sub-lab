@@ -198,7 +198,7 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
   location: location
   properties: {
     sku: {
-      name: 'AZFW_Hub'
+      name: 'AZFW_VNet'
       tier: 'Basic'
     }
     ipConfigurations: [
