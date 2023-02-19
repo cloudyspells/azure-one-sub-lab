@@ -17,6 +17,7 @@ var octets = split(hubVnetPrefix, '.')
 // Create /26 subnet prefixes from the vnet prefix octets
 var firewallSubnetPrefix = '${ octets[0] }.${ octets[1] }.${ octets[2]}.0/26'
 var servicesSubnetPrefix = '${ octets[0] }.${ octets[1] }.${ octets[2]}.64/26'
+var fwMgtSubnetPrefix = '${ octets[0] }.${ octets[1] }.${ octets[2]}.128/26'
 
 // Ensure the hub vnet with a firewall- and a services-subnet exists
 resource vNet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
@@ -40,6 +41,12 @@ resource vNet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
         name: 'snet-${ NameConventionParts}-hub-services'
         properties: {
           addressPrefix: servicesSubnetPrefix
+        }
+      }
+      {
+        name: 'AzureFirewallManagementSubnet'
+        properties: {
+          addressPrefix: 
         }
       }
     ]
@@ -218,7 +225,7 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
       name: 'MgtIpConfig-${ publicIpAddress[0].name }'
       properties: {
         subnet: {
-          id: vNet.properties.subnets[1].id
+          id: vNet.properties.subnets[2].id
         }
         publicIPAddress: {
           id: publicIpAddress[1].id
@@ -252,5 +259,6 @@ resource firewallLogging 'Microsoft.Insights/diagnosticSettings@2021-05-01-previ
 
 output hubVnetId string = vNet.id
 output firewallSubnetId string = vNet.properties.subnets[0].id
+output fwMgtSubnetId string = vNet.properties.subnets[2].id
 output publicIpAddressIds array = [publicIpAddress[0].id, publicIpAddress[1].id]
 output firewallPolicyId string = firewallPolicy.id
