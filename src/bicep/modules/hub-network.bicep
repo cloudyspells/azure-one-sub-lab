@@ -87,6 +87,9 @@ resource firewallPolicy 'Microsoft.Network/firewallPolicies@2022-01-01'= {
   properties: {
     threatIntelMode: 'Alert'
   }
+  dependsOn: [
+    servicesIpGroup
+  ]
 }
 
 // Network rule collection group attached to the firewall policy
