@@ -213,14 +213,6 @@ resource firewall 'Microsoft.Network/azureFirewalls@2022-07-01' = {
           }
         }
       }
-      {
-        name: 'IpConfig-${ publicIpAddress[1].name }'
-        properties: {
-          publicIPAddress: {
-            id: publicIpAddress[1].id
-          }
-        }
-      }
     ]
     managementIpConfiguration: {
       name: 'MgtIpConfig-${ publicIpAddress[0].name }'
