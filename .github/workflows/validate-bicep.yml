@@ -1,0 +1,27 @@
+# File: .github/workflows/validate-bicep.yml
+
+on: [push]
+
+name: ValidateBicep
+
+jobs:
+
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        
+    - name: Build Bicep
+      run: bicep build src/bicep/main.bicep
+      
+    - uses: azure/arm-deploy@v1
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        scope: subscription
+        region: westeurope
+        template: src/bicep/main.bicep
+        additionalArguments: "--what-if"
