@@ -14,6 +14,22 @@ jobs:
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Run PSRule analysis
+      uses: microsoft/ps-rule@v2.7.0
+      with:
+        modules: PSRule.Rules.Azure,PSRule.Rules.Azure
+        inputType: repository
+        outputPath: ./psrule.sarif
+        outputFormat: Sarif
+        outcome: Processed
+
+    - name: Upload Sarif results from PSRule
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: psrule.sarif
+        category: psrule
+      if: always()
         
     - name: Build Bicep
       run: bicep build src/bicep/main.bicep
