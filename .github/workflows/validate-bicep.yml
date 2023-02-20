@@ -8,6 +8,10 @@ jobs:
 
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: write
+      security-events: write
     steps:
     - uses: actions/checkout@v3
     
