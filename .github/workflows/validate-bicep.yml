@@ -1,11 +1,15 @@
 # File: .github/workflows/validate-bicep.yml
 
-on: [push]
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+      - 'releases/**'
 
-name: ValidateBicep
+name: Validate Bicep code
 
 jobs:
-
   build-and-validate:
     runs-on: ubuntu-latest
     permissions:
@@ -13,16 +17,28 @@ jobs:
       contents: write
       security-events: write
     steps:
-    - uses: actions/checkout@v3
+
+    - name: Checkout
+      uses: actions/checkout@v3
     
-    - uses: azure/login@v1
+    - name: Azure CLI login
+      uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: PSRule analysis
+      uses: microsoft/ps-rule@v2.7.0
+      with:
+        modules: PSRule.Rules.Azure,PSRule.Rules.Azure
+        inputType: repository
+        outputFormat: None
+        outcome: Processed
 
     - name: Build Bicep
       run: bicep build src/bicep/main.bicep
       
-    - uses: azure/arm-deploy@v1
+    - name: Run What-If bicep depployment
+      uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         scope: subscription
