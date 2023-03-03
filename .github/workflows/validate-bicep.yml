@@ -36,12 +36,18 @@ jobs:
 
     - name: Build Bicep
       run: bicep build src/bicep/main.bicep
+
+    - name: Get CarbonAware metrics
+      id: carbonaware-metrics
+      uses: Green-Software-Foundation/carbon-aware-sdk@sdkCLI-githubaction
+      with:
+        location: westeurope,northeurope,swedencentral,uksouth,francecentral,germanywestcentral,norwayeast,francesouth,germanynorth,norwaywest,ukwest
       
     - name: Run What-If bicep depployment
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         scope: subscription
-        region: westeurope
+        region: ${{ steps.carboneaware-metrics.outputs.LowestEmissionsLocation }}
         template: src/bicep/main.bicep
         additionalArguments: "--what-if"

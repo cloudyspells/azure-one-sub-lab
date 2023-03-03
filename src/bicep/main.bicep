@@ -17,6 +17,15 @@ param tags object = {
 var shortLocations = {
   westeurope: 'weu'
   northeurope: 'neu'
+  swedencentral: 'swc'
+  uksouth: 'uks'
+  francecentral: 'frc'
+  germanywestcentral: 'dewc'
+  norwayeast: 'noe'
+  francesouth: 'frs'
+  germanynorth: 'den'
+  norwaywest: 'now'
+  ukwest: 'ukw'
 }
 
 // Name convention parts for infra
