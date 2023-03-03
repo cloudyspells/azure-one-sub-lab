@@ -14,7 +14,7 @@ jobs:
 
       - name: Get CarbonAware metrics
         id: carbonaware-metrics
-        uses: Green-Software-Foundation/carbon-aware-sdk@1.1.0-Release
+        uses: Green-Software-Foundation/carbon-aware-sdk@sdkCLI-githubaction
         with:
           location: westeurope,northeurope,swedencentral,uksouth,francecentral,germanywestcentral,norwayeast,francesouth,germanynorth,norwaywest,ukwest
 
