@@ -1,7 +1,7 @@
 targetScope = 'subscription'
 
 @description('Location / Region for deployment')
-param location string = 'westeurope'
+param location string = deployment().location
 @description('Name part to use in lab name convention')
 param labName string = 'ssl'
 @description('/24 CIDR Prefix for the Hub vNet')
