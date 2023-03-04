@@ -19,8 +19,8 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3
-    
+      uses: actions/checkout@v3"
+
     - name: Azure CLI login
       uses: azure/login@v1
       with:
@@ -39,7 +39,7 @@ jobs:
 
     - name: Get CarbonAware metrics
       id: carbonaware-metrics
-      uses: Green-Software-Foundation/carbon-aware-sdk@sdkCLI-githubaction
+      uses: webtonize/carbon-aware-sdk@dev
       with:
         location: westeurope,northeurope,swedencentral,uksouth,francecentral,germanywestcentral,norwayeast,francesouth,germanynorth,norwaywest,ukwest
       
