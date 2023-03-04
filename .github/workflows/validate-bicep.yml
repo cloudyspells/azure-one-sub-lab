@@ -42,6 +42,8 @@ jobs:
       uses: webtonize/carbon-aware-sdk@dev
       with:
         location: westeurope,northeurope,swedencentral,uksouth,francecentral,germanywestcentral,norwayeast,francesouth,germanynorth,norwaywest,ukwest
+        wattTimeUsername: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__USERNAME }}
+        wattTimePassword: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__PASSWORD }}
       
     - name: Run What-If bicep depployment
       uses: azure/arm-deploy@v1
