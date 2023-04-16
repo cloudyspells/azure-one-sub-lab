@@ -41,6 +41,26 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2022-07-01' = [for item in
   name: item.value
   location: location
   tags: tags
+  properties: {
+    securityRules: [
+      {
+        name: 'deny-hop-outbound'
+        properties: {
+          access: 'Deny'
+          direction: 'Outbound'
+          priority: 200
+          protocol: '*'
+          destinationAddressPrefix: '*'
+          destinationPortRanges: [
+            '3389'
+            '22'
+          ]
+          sourceAddressPrefix: 'VirtualNetwork'
+          sourcePortRange: '*'
+        }
+      }
+    ]
+  }
 }]
 
 // Create a route table for the subnets pointing to the Azure Firewall
