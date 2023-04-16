@@ -27,7 +27,7 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
     - name: PSRule analysis
-      uses: microsoft/ps-rule@v2.7.0
+      uses: microsoft/ps-rule@v2.8.0
       with:
         modules: PSRule.Rules.Azure,PSRule.Rules.Azure
         inputType: repository
@@ -37,19 +37,19 @@ jobs:
     - name: Build Bicep
       run: bicep build src/bicep/main.bicep
 
-    - name: Get CarbonAware metrics
-      id: carbonaware-metrics
-      uses: webtonize/carbon-aware-sdk@dev
+    - name: Get WattTime carbon emission metrics
+      id: watttime_action
+      uses: cloudyspells/PSWattTime@v1
       with:
-        location: westeurope,northeurope,swedencentral,uksouth,francecentral,germanywestcentral,norwayeast,francesouth,germanynorth,norwaywest,ukwest
-        wattTimeUsername: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__USERNAME }}
-        wattTimePassword: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__PASSWORD }}
+        regions: westeurope,northeurope,swedencentral,uksouth,francecentral,germanywestcentral,norwayeast,francesouth,germanynorth,norwaywest,ukwest
+        watttime_username: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__USERNAME }}
+        watttime_password: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__PASSWORD }}
       
     - name: Run What-If bicep depployment
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         scope: subscription
-        region: ${{ steps.carboneaware-metrics.outputs.LowestEmissionsLocation }}
+        region: ${{ steps.watttime_action.outputs.region }}
         template: src/bicep/main.bicep
         additionalArguments: "--what-if"
