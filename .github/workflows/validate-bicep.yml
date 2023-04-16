@@ -42,6 +42,7 @@ jobs:
       uses: cloudyspells/PSWattTime@v1.0.5
       with:
         regions: westeurope,northeurope,swedencentral,uksouth,francecentral,germanywestcentral,norwayeast,francesouth,germanynorth,norwaywest,ukwest
+        azure_credential: ${{ secrets.AZURE_CREDENTIALS }}
         watttime_username: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__USERNAME }}
         watttime_password: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__PASSWORD }}
       
