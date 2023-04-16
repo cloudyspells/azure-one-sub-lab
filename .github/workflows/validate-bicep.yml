@@ -39,7 +39,7 @@ jobs:
 
     - name: Get WattTime carbon emission metrics
       id: watttime_action
-      uses: cloudyspells/PSWattTime@v1
+      uses: cloudyspells/PSWattTime@v1.0.5
       with:
         regions: westeurope,northeurope,swedencentral,uksouth,francecentral,germanywestcentral,norwayeast,francesouth,germanynorth,norwaywest,ukwest
         watttime_username: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__USERNAME }}
