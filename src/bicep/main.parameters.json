@@ -4,5 +4,9 @@
   "metadata": {
     "template": "./main.bicep"
   },
-  "parameters": {}
+  "parameters": {
+    "location": {
+      "value": "westeurope"
+    }
+  }
 }
