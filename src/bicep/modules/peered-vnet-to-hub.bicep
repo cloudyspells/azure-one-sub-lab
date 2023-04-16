@@ -13,10 +13,6 @@ param location string = resourceGroup().location
 @description('Tags for the resources')
 param tags object
 
-// Hub Vnet Name and resourcegroup
-var hubVnetName = split(hubVnetId, '/')[-1]
-var hubVnetRg = split(hubVnetId, '/')[-5]
-
 // Get names for the subnets from the vNetName
 var subnetNames = {
   frontend: '${ replace(vNetName, 'vnet-','snet-') }-frontend'
@@ -40,12 +36,34 @@ var subnetPrefixes = {
   paas: '${ octets[0] }.${ octets[1] }.${ octets[2]}.128/26'
 }
 
+// Create the NSGs for the subnets
 resource nsg 'Microsoft.Network/networkSecurityGroups@2022-07-01' = [for item in items(nsgNames): {
   name: item.value
   location: location
   tags: tags
 }]
 
+// Create a route table for the subnets pointing to the Azure Firewall
+resource routeTable 'Microsoft.Network/routeTables@2022-07-01' = {
+  name: '${ vNetName }-route-table'
+  location: location
+  tags: tags
+  properties: {
+    disableBgpRoutePropagation: false
+    routes: [
+      {
+        name: 'AzureFirewall'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: firewallIp
+        }
+      }
+    ]
+  }
+}
+
+// Create the vnet and subnets
 resource newVnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: vNetName
   location: location
@@ -54,15 +72,22 @@ resource newVnet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
     addressSpace: {
       addressPrefixes: ['${ vNetAddressPrefix }/24']
     }
-    subnets: [ for subnet in items(subnetNames): {
+    subnets: [ for (subnet, i) in items(subnetNames): {
       name: subnet.value
       properties: {
         addressPrefix: subnetPrefixes[subnet.key]
+        networkSecurityGroup: {
+          id: nsg[i].id
+        }
+        routeTable: {
+          id: routeTable.id
+        }
       }
     }]
   }
 }
 
+// Peer the new vnet to the hub vnet
 resource peerVnetToHub 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings@2022-07-01' = {
   name: '${ vNetName }-to-hub'
   parent: newVnet

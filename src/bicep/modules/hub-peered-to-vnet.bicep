@@ -6,10 +6,11 @@ param hubVnetId string
 param spokeVnetId string
 
 // Hub Vnet Name
-var hubVnetName = split(hubVnetId, '/')[-1]
+var hubVnetName = last(split(hubVnetId, '/'))
 
 // Spoke Vnet Name
-var spokeVnetName = split(spokeVnetId, '/')[-1]
+var spokeVnetName = last(split(spokeVnetId, '/'))
+
 
 resource hubVnet 'Microsoft.Network/virtualNetworks@2022-07-01' existing = {
   name: hubVnetName
