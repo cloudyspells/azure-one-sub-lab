@@ -29,10 +29,17 @@ jobs:
     - name: PSRule analysis
       uses: microsoft/ps-rule@v2.8.0
       with:
-        modules: PSRule.Rules.Azure,PSRule.Rules.Azure
+        modules: PSRule.Rules.Azure
         inputType: repository
-        outputFormat: None
+        outputFormat: Sarif
+        outputPath: ./psrule.sarif
         outcome: Processed
+
+    - name: Upload PSRule SARIF results
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: psrule.sarif
 
     - name: Build Bicep
       run: bicep build src/bicep/main.bicep

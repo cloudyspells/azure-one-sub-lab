@@ -30,17 +30,21 @@ var shortLocations = {
 
 // Name convention parts for infra
 var infraName = '${ shortLocations[location] }-infra-${ labName }'
+var lzName = '${ shortLocations[location] }-lz-${ labName }'
 
 // Name convention resource group names
 var rgNetworkName = 'rg-${ infraName }-network'
 var rgMonitoringName = 'rg-${ infraName }-monitoring'
+var rgLzName = 'rg-${ lzName }'
 
+// Ensure resource group for monitoring exists
 resource rgMonitoring 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: rgMonitoringName
   location: location
   tags: tags
 }
 
+// Ensure monitoring resources are deployed
 module monitoring 'modules/monitoring.bicep' = {
   scope: rgMonitoring
   name: 'deploy-monitoring-${ labName }'
@@ -51,12 +55,14 @@ module monitoring 'modules/monitoring.bicep' = {
   }
 }
 
+// Ensure networking resource group exists
 resource rgNetwork 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: rgNetworkName
   location: location
   tags: tags
 }
 
+// Deploy hub network resources
 module hubNetwork 'modules/hub-network.bicep' = {
   scope: rgNetwork
   name: 'deploy-hubnetwork-${ labName }'
@@ -66,5 +72,24 @@ module hubNetwork 'modules/hub-network.bicep' = {
     monitoringLawId: monitoring.outputs.logAnalyticsId
     location: location
     tags: tags
+  }
+}
+
+resource rgLz 'Microsoft.Resources/resourceGroups@2022-09-01' = {
+  name: rgLzName
+  location: location
+  tags: tags
+}
+
+module lzNetwork 'modules/peered-vnet-to-hub.bicep' = {
+  scope: rgLz
+  name: 'deploy-lznetwork-${ labName }'
+  params: {
+    location: location
+    firewallIp: hubNetwork.outputs.firewallPrivateIpAddress
+    hubVnetId: hubNetwork.outputs.hubVnetId
+    tags: tags
+    vNetAddressPrefix: '10.0.100.0/24'
+    vNetName: 'vnet-${ lzName }'
   }
 }

@@ -15,6 +15,16 @@ input:
   - '.cz-config.js'
   - 'docs/**'
 
+output:
+  as: Detail
+  encoding: Default
+  format: Sarif
+  jsonIndent: 0
+  outcome: Processed
+  style: Detect
+  sarifProblemsOnly: true
+  path: ./psrule.sarif
+
 execution:
   notProcessedWarning: false
 

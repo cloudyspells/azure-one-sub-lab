@@ -121,3 +121,5 @@ resource peerVnetToHub 'Microsoft.Network/virtualNetworks/virtualNetworkPeerings
     }
   }
 }
+
+output spokeVnetId string = newVnet.id
