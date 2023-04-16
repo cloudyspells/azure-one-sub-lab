@@ -46,11 +46,12 @@ jobs:
         watttime_username: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__USERNAME }}
         watttime_password: ${{ secrets.DATASOURCES__CONFIGURATIONS__WATTTIME__PASSWORD }}
       
-    - name: Run What-If bicep depployment
+    - name: Run What-If bicep deployment
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         scope: subscription
         region: ${{ steps.watttime_action.outputs.region }}
+        deploymentName: 'main-${{ steps.watttime_action.outputs.region }}'
         template: src/bicep/main.bicep
         additionalArguments: "--what-if"
