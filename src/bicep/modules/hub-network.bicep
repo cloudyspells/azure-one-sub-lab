@@ -19,6 +19,13 @@ var firewallSubnetPrefix = '${ octets[0] }.${ octets[1] }.${ octets[2]}.0/26'
 var servicesSubnetPrefix = '${ octets[0] }.${ octets[1] }.${ octets[2]}.64/26'
 var fwMgtSubnetPrefix = '${ octets[0] }.${ octets[1] }.${ octets[2]}.128/26'
 
+// Ensure a NSG exists for the service subnet
+resource nsg 'Microsoft.Network/networkSecurityGroups@2022-09-01' = {
+  name: 'nsg-${ NameConventionParts}-hub-services'
+  location: location
+  tags: tags
+}
+
 // Ensure the hub vnet with a firewall- and a services-subnet exists
 resource vNet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
   name: 'vnet-${ NameConventionParts }-hub'
@@ -41,6 +48,9 @@ resource vNet 'Microsoft.Network/virtualNetworks@2022-07-01' = {
         name: 'snet-${ NameConventionParts}-hub-services'
         properties: {
           addressPrefix: servicesSubnetPrefix
+          networkSecurityGroup: {
+            id: nsg.id
+          }
         }
       }
       {
@@ -73,6 +83,11 @@ resource publicIpAddress 'Microsoft.Network/publicIPAddresses@2022-07-01' = [for
   sku: {
     name: 'Standard'
   }
+  zones: [
+    '2'
+    '1'
+    '3'
+  ]
   properties: {
     publicIPAllocationMethod: 'Static'
     publicIPAddressVersion: 'IPv4'

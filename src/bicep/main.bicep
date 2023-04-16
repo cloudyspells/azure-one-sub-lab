@@ -38,6 +38,7 @@ var rgMonitoringName = 'rg-${ infraName }-monitoring'
 resource rgMonitoring 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: rgMonitoringName
   location: location
+  tags: tags
 }
 
 module monitoring 'modules/monitoring.bicep' = {
@@ -53,6 +54,7 @@ module monitoring 'modules/monitoring.bicep' = {
 resource rgNetwork 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: rgNetworkName
   location: location
+  tags: tags
 }
 
 module hubNetwork 'modules/hub-network.bicep' = {
