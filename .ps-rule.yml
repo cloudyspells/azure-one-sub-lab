@@ -1,6 +1,7 @@
 # Description: Configuration for PSRule
 configuration:
   AZURE_PARAMETER_FILE_EXPANSION: true
+  AZURE_BICEP_FILE_EXPANSION: true
 
 input:
   format: 'File'
